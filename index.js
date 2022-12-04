@@ -25,7 +25,9 @@ app.use(morgan("common"));
 app.use('/user', userRouter);
 app.use('/book', bookRouter);
 
-app.listen(8000, () => {
-    console.log("Server is running...");
+const PORT = process.env.PORT || 5000;
+
+app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
 });
 
