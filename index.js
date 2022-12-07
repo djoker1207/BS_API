@@ -8,6 +8,8 @@ const dotenv = require("dotenv");
 
 const userRouter = require('./routes/user.route');
 const bookRouter = require('./routes/book.route');
+const questionRouter = require('./routes/question.route');
+const answerRouter = require('./routes/answer.route');
 
 dotenv.config();
 
@@ -24,8 +26,10 @@ app.use(morgan("common"));
 //Route
 app.use('/user', userRouter);
 app.use('/book', bookRouter);
+app.use('/question', questionRouter);
+app.use('/answer', answerRouter);
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);

@@ -15,15 +15,20 @@ const userController = {
     register:
         async (req, res) => {
 
-            const result = await cloudinary.uploader.upload(req.file.path);
-
             //validate user info
             const { error } = validation.registerValidate(req.body);
-            if (error) return res.send(error.details[0].message);
-
             //check email existed in db
             const emailCreated = await UserModel.findOne({ email: req.body.email });
-            if (emailCreated) return res.send("Email is already created");
+
+            let result;
+
+            if (error) {
+                return res.send(error.details[0].message);
+            } else if (emailCreated) {
+                return res.send("Email is already created");
+            } else {
+                result = await cloudinary.uploader.upload(req.file.path);
+            }
 
             //encrypt password
             var salt = bcrypt.genSaltSync(10);
@@ -35,7 +40,7 @@ const userController = {
             newUser.email = req.body.email;
             newUser.phonenumber = req.body.phonenumber;
             newUser.password = hashPassword;
-            newUser.genres= req.body.genres;
+            newUser.genre = req.body.genre;
             newUser.avatar = result.secure_url;
             newUser.cloudinary_id = result.public_id;
 
@@ -68,6 +73,30 @@ const userController = {
             var token = jwt.sign({ id: user._id }, process.env.JWT_STRING)
             res.header('auth-token', token).send({ token, user });
         },
+
+    getCurrentUser:
+        async (req, res) => {
+            try {
+                const user = req.user;
+                res.send({ user });
+            } catch (err) {
+                res.send({ message: err.message });
+            }
+        },
+
+    getUserByID:
+        async (req, res) => {
+            try {
+                const user = await UserModel.findOne({ _id: req.params.id });
+                if (!user) {
+                    res.send('User does not exist');
+                } else {
+                    res.send(user);
+                }
+            } catch (err) {
+                res.send({ message: err.message });
+            }
+        }
 }
 
 module.exports = userController;
