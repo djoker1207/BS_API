@@ -1,5 +1,5 @@
 const QuestionModel = require('../models/question.model');
-
+const errorObject = require('../ultils/error');
 const questionController = {
 
     create_question: async (req, res) => {
@@ -11,9 +11,15 @@ const questionController = {
 
         try {
             const question = await newQuestion.save();
-            res.send(question);
+            errorObject.message = "Save question success";
+            errorObject.messageCode = 200;
+            errorObject.data = question;
+            return res.send(errorObject);
         } catch (error) {
-            res.status(400).send(error);
+            errorObject.message = error.message;
+            errorObject.messageCode = 400;
+            errorObject.data = null;
+            return res.send(errorObject);
         }
 
     },
@@ -22,9 +28,12 @@ const questionController = {
 
         const question = await QuestionModel.findOne({ _id: req.params.id });
 
-        if (question.user_id != req.body.user_id)
-            return res.status(404).send("You cannot update this question");
-
+        if (question.user_id != req.body.user_id) {
+            errorObject.message = "You cannot update this question";
+            errorObject.messageCode = 400;
+            errorObject.data = null;
+            return res.send(errorObject);
+        }
         try {
             const updatedQuestion = await QuestionModel.findOneAndUpdate(
                 { _id: req.params.id },
@@ -35,9 +44,15 @@ const questionController = {
                     }
                 }
             )
-            res.send("Update successful !");
+            errorObject.message = "Update successful";
+            errorObject.messageCode = 200;
+            errorObject.data = null;
+            return res.send(errorObject);
         } catch (error) {
-            res.send(error);
+            errorObject.message = error.message;
+            errorObject.messageCode = 400;
+            errorObject.data = null;
+            return res.send(errorObject);
         }
     },
 
@@ -45,14 +60,24 @@ const questionController = {
 
         const question = await QuestionModel.findOne({ _id: req.params.id });
 
-        if (question.user_id != req.body.user_id)
-            return res.status(404).send("You cannot delete this question");
+        if (question.user_id != req.body.user_id) {
+            errorObject.message = "You can not delete this question";
+            errorObject.messageCode = 400;
+            errorObject.data = null;
+            return res.send(errorObject);
+        }
 
         try {
             await question.remove();
-            res.send("Delete successful !");
+            errorObject.message = "Delete question successful";
+            errorObject.messageCode = 200;
+            errorObject.data = null;
+            return res.send(errorObject);
         } catch (error) {
-            res.send(error);
+            errorObject.message = error.message;
+            errorObject.messageCode = 400;
+            errorObject.data = null;
+            return res.send(errorObject);
         }
     },
 
@@ -61,9 +86,15 @@ const questionController = {
             .populate('user_id')
             .exec((err, question) => {
                 if (err) {
-                    res.send(err);
+                    errorObject.message = err.message;
+                    errorObject.messageCode = 400;
+                    errorObject.data = null;
+                    return res.send(errorObject);
                 } else {
-                    res.send(question);
+                    errorObject.message = "Get Detail Question Successful";
+                    errorObject.messageCode = 200;
+                    errorObject.data = question;
+                    return res.send(errorObject);
                 }
             })
     },
@@ -75,9 +106,15 @@ const questionController = {
             .populate('user_id')
             .exec((err, question) => {
                 if (err) {
-                    res.send(err);
+                    errorObject.message = err.message;
+                    errorObject.messageCode = 400;
+                    errorObject.data = null;
+                    return res.send(errorObject);
                 } else {
-                    res.send(question);
+                    errorObject.message = "Get All Question Successful";
+                    errorObject.messageCode = 200;
+                    errorObject.data = question;
+                    return res.send(errorObject);
                 }
             })
 

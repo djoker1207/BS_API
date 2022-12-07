@@ -1,5 +1,5 @@
 const AnswerModel = require('../models/answer.model');
-
+const errorObject = require('../ultils/error');
 const answerController = {
 
     create_answer: async (req, res) => {
@@ -11,9 +11,15 @@ const answerController = {
 
         try {
             const answer = await newAnswer.save();
-            res.send(answer);
+            errorObject.message = "Create answer successfull"
+            errorObject.messageCode = 200;
+            errorObject.data = answer;
+            return res.send(errorObject);
         } catch (error) {
-            res.status(400).send(error);
+            errorObject.message = error.message;
+            errorObject.messageCode = 400;
+            errorObject.data = null;
+            return res.send(errorObject);
         }
 
     },
@@ -24,9 +30,15 @@ const answerController = {
             .populate('user_id')
             .exec((err, answer) => {
                 if (err) {
-                    res.send(err);
+                    errorObject.message = err.message;
+                    errorObject.messageCode = 400;
+                    errorObject.data = null;
+                    return res.send(errorObject);
                 } else {
-                    res.send(answer);
+                    errorObject.message = "Get answer by ID successful";
+                    errorObject.messageCode = 200;
+                    errorObject.data = answer;
+                    return res.send(errorObject);
                 }
             })
     },
@@ -35,14 +47,24 @@ const answerController = {
 
         const answer = await AnswerModel.findOne({ _id: req.params.id });
 
-        if (answer.user_id != req.body.user_id)
-            return res.status(404).send("You can not delete this answer !");
+        if (answer.user_id != req.body.user_id) {
+            errorObject.message = "You can not delete this answer";
+            errorObject.messageCode = 400;
+            errorObject.data = null;
+            return res.send(errorObject);
+        }
 
         try {
             await answer.remove();
-            res.send("Delete answer successful")
+            errorObject.message = "Delete answer successful";
+            errorObject.messageCode = 200;
+            errorObject.data = null;
+            return res.send(errorObject);
         } catch (err) {
-            res.send(err);
+            errorObject.message = err.message;
+            errorObject.messageCode = 400;
+            errorObject.data = null;
+            return res.send(errorObject);
         }
 
     }

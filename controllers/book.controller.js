@@ -1,7 +1,7 @@
 const BookModel = require('../models/book.model');
 const cloudinary = require('../ultils/cloudinary');
 const upload = require("../ultils/multer");
-
+const errorObject = require('../ultils/error');
 const bookController = {
 
     //upload
@@ -23,10 +23,16 @@ const bookController = {
             newBook.cloudinary_id = result.public_id;
 
             const book = await newBook.save();
-            res.send(book);
+            errorObject.message = "Upload book sucess";
+            errorObject.messageCode = 200;
+            errorObject.data = book;
+            return res.send(errorObject);
 
         } catch (err) {
-            console.log(err);
+            errorObject.message = err.message;
+            errorObject.data = null;
+            errorObject.messageCode = 400;
+            return res.send(errorObject);
         }
 
     },
@@ -35,8 +41,12 @@ const bookController = {
         try {
             let book = await BookModel.findById(req.params.id);
 
-            if (book.user_id != req.body.user_id)
-                return res.send("You are not allowed to update this book");
+            if (book.user_id != req.body.user_id) {
+                errorObject.message = "You are not allowed to update this book";
+                errorObject.data = null;
+                errorObject.messageCode = 400;
+                return res.send(errorObject);
+            }
 
             let result;
             if (req.file) {
@@ -59,10 +69,16 @@ const bookController = {
                 }
             )
 
-            res.send(updatedBoook);
+            errorObject.message = "Update book successfull";
+            errorObject.data = null;
+            errorObject.messageCode = 200;
+            return res.send(errorObject);
 
         } catch (err) {
-            console.log(err)
+            errorObject.message = err.message;
+            errorObject.data = null;
+            errorObject.messageCode = 400;
+            return res.send(errorObject);
         }
     },
 
@@ -71,16 +87,28 @@ const bookController = {
 
             let book = await BookModel.findOne({ _id: req.params.id });
 
-            if (book.user_id != req.body.user_id)
-                return res.send("You are not allowed to delete this book");
+            if (book.user_id != req.body.user_id) {
+                errorObject.message = "You are not allowed to delete this book";
+                errorObject.data = null;
+                errorObject.messageCode = 400;
+                return res.send(errorObject);
+            }
+
 
             await cloudinary.uploader.destroy(book.cloudinary_id);
 
             await book.remove();
 
-            res.send(book);
+            errorObject.message = "Delete book successful";
+            errorObject.data = null;
+            errorObject.messageCode = 200;
+            return res.send(errorObject);
+
         } catch (err) {
-            console.log(err);
+            errorObject.message = err.message;
+            errorObject.data = null;
+            errorObject.messageCode = 400;
+            return res.send(errorObject);
         }
     },
 
@@ -90,13 +118,22 @@ const bookController = {
                 .sort({ 'createdAt': -1 })
                 .exec((err, book) => {
                     if (err) {
-                        res.send(err);
+                        errorObject.message = err.message;
+                        errorObject.data = null;
+                        errorObject.messageCode = 400;
+                        return res.send(errorObject);
                     } else {
-                        res.send(book);
+                        errorObject.message = "get lended books successful";
+                        errorObject.data = book;
+                        errorObject.messageCode = 200;
+                        return res.send(errorObject);
                     }
                 })
         } catch (err) {
-            console.log(err);
+            errorObject.message = err.message;
+            errorObject.data = null;
+            errorObject.messageCode = 400;
+            return res.send(errorObject);
         }
     },
 
@@ -152,10 +189,16 @@ const bookController = {
                 books
             };
 
-            res.status(200).json(response);
+            errorObject.message = "get books successful";
+            errorObject.data = response;
+            errorObject.messageCode = 200;
+            return res.send(errorObject);
 
         } catch (err) {
-            console.log(err);
+            errorObject.message = err.message;
+            errorObject.data = null;
+            errorObject.messageCode = 400;
+            return res.send(errorObject);
         }
 
     }
