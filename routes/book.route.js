@@ -22,7 +22,7 @@ router.get('/', bookController.getBook);
 router.get('/usergenres', bookController.getBookByUserGenre);
 
 // lấy theo genres
-// router.get('/allbook', bookController.getBookByGenre);
+router.get('/allbook', bookController.getBookByGenre);
 
 // lấy detail books
 router.get('/detail/:id', bookController.getDetailBook);

@@ -235,65 +235,79 @@ const bookController = {
         }
     },
 
-    // getBookByGenre: async (req, res) => {
+    getBookByGenre: async (req, res) => {
 
-    //     try {
+        try {
 
-    //         const genreOptions = [
-    //             "Chính trị - pháp luật",
-    //             "Khoa học công nghệ - Kinh tế",
-    //             "Văn học nghệ thuật",
-    //             "Văn hóa xã hội - Lịch sử",
-    //             "Giáo trình",
-    //             "Truyện - tiểu thuyết",
-    //             "Tâm lý - tâm linh - tôn giáo",
-    //             "Sách thiếu nhi"
-    //         ];
+            const genreOptions = [
+                "Chính trị - pháp luật",
+                "Khoa học công nghệ - Kinh tế",
+                "Văn học nghệ thuật",
+                "Văn hóa xã hội - Lịch sử",
+                "Giáo trình",
+                "Truyện - tiểu thuyết",
+                "Tâm lý - tâm linh - tôn giáo",
+                "Sách thiếu nhi"
+            ];
 
-    //         let data = [];
+            let collection1 = await BookModel.find({ genre: genreOptions[0], lended: false })
 
-    //         let bookObject = {
-    //             genre,
-    //             books
-    //         }
+            let collection2 = await BookModel.find({ genre: genreOptions[1], lended: false })
 
-    //         for (i = 0; i < genreOptions.length; i++) {
-    //             let books = await BookModel.find({genre: genreOptions[i], lended:false});
-    //             bookObject.genre = genreOptions[i];
-    //             bookObject.books = books;
-    //             data.push(bookObject);
-    //         }
+            let collection3 = await BookModel.find({ genre: genreOptions[2], lended: false })
 
-    //         errorObject.data = data;
-    //         errorObject.message = "Get books by genre successful";
-    //         errorObject.messageCode = 200;
+            let collection4 = await BookModel.find({ genre: genreOptions[3], lended: false })
 
-    //         res.send(errorObject);
+            let collection5 = await BookModel.find({ genre: genreOptions[4], lended: false })
 
-    //     } catch (err) {
-    //         errorObject.message = err.message;
-    //         errorObject.data = null;
-    //         errorObject.messageCode = 400;
-    //     }
+            let collection6 = await BookModel.find({ genre: genreOptions[5], lended: false })
 
-    // }
+            let collection7 = await BookModel.find({ genre: genreOptions[6], lended: false })
 
-    getDetailBook: async(req,res) => {
+            let collection8 = await BookModel.find({ genre: genreOptions[7], lended: false })
+
+
+            let data = [
+                { genre: genreOptions[0], books: collection1 },
+                { genre: genreOptions[1], books: collection2 },
+                { genre: genreOptions[2], books: collection3 },
+                { genre: genreOptions[3], books: collection4 },
+                { genre: genreOptions[4], books: collection5 },
+                { genre: genreOptions[5], books: collection6 },
+                { genre: genreOptions[6], books: collection7 },
+                { genre: genreOptions[7], books: collection8 },
+            ];
+
+            errorObject.message = "Get books by genres successful";
+            errorObject.data = data;
+            errorObject.messageCode = 200;
+
+            res.send(errorObject);
+
+        } catch (err) {
+            errorObject.message = err.message;
+            errorObject.data = null;
+            errorObject.messageCode = 400;
+        }
+
+    },
+
+    getDetailBook: async (req, res) => {
         await BookModel.findOne({ _id: req.params.id })
-        .populate('user_id')
-        .exec((err, book) => {
-            if (err) {
-                errorObject.message = err.message;
-                errorObject.messageCode = 400;
-                errorObject.data = null;
-                return res.send(errorObject);
-            } else {
-                errorObject.message = "Get Detail Book Successful";
-                errorObject.messageCode = 200;
-                errorObject.data = book;
-                return res.send(errorObject);
-            }
-        })
+            .populate('user_id')
+            .exec((err, book) => {
+                if (err) {
+                    errorObject.message = err.message;
+                    errorObject.messageCode = 400;
+                    errorObject.data = null;
+                    return res.send(errorObject);
+                } else {
+                    errorObject.message = "Get Detail Book Successful";
+                    errorObject.messageCode = 200;
+                    errorObject.data = book;
+                    return res.send(errorObject);
+                }
+            })
     }
 
 }
