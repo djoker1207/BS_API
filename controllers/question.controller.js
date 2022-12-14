@@ -1,5 +1,7 @@
 const QuestionModel = require('../models/question.model');
+const AnswerModel = require('../models/answer.model');
 const errorObject = require('../ultils/error');
+
 const questionController = {
 
     create_question: async (req, res) => {
@@ -82,6 +84,9 @@ const questionController = {
     },
 
     get_question: async (req, res) => {
+        
+        // let answer = await AnswerModel.findOne({_id: req.params.id});
+
         await QuestionModel.findOne({ _id: req.params.id })
             .populate('user_id')
             .exec((err, question) => {
@@ -93,6 +98,7 @@ const questionController = {
                 } else {
                     errorObject.message = "Get Detail Question Successful";
                     errorObject.messageCode = 200;
+                    // question.answer = answer;
                     errorObject.data = question;
                     return res.send(errorObject);
                 }

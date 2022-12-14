@@ -1,4 +1,5 @@
 const BookModel = require('../models/book.model');
+const UserModel = require('../models/user.model');
 const cloudinary = require('../ultils/cloudinary');
 const upload = require("../ultils/multer");
 const errorObject = require('../ultils/error');
@@ -201,6 +202,98 @@ const bookController = {
             return res.send(errorObject);
         }
 
+    },
+
+    getBookByUserGenre: async (req, res) => {
+        try {
+
+            let usergenres = await UserModel.findOne({ _id: req.body.user_id });
+
+            let collection1 = await BookModel.find({ genre: usergenres.genre[0], lended: false })
+                .limit(3);
+            let collection2 = await BookModel.find({ genre: usergenres.genre[1], lended: false })
+                .limit(3);
+            let collection3 = await BookModel.find({ genre: usergenres.genre[2], lended: false })
+                .limit(3);
+
+            let data = [
+                { genre: usergenres.genre[0], books: collection1 },
+                { genre: usergenres.genre[1], books: collection2 },
+                { genre: usergenres.genre[2], books: collection3 },
+            ];
+
+            errorObject.message = "Get books by user's genre successful";
+            errorObject.data = data;
+            errorObject.messageCode = 200;
+
+            res.send(errorObject);
+
+        } catch (err) {
+            errorObject.message = err.message;
+            errorObject.data = null;
+            errorObject.messageCode = 400;
+        }
+    },
+
+    // getBookByGenre: async (req, res) => {
+
+    //     try {
+
+    //         const genreOptions = [
+    //             "Chính trị - pháp luật",
+    //             "Khoa học công nghệ - Kinh tế",
+    //             "Văn học nghệ thuật",
+    //             "Văn hóa xã hội - Lịch sử",
+    //             "Giáo trình",
+    //             "Truyện - tiểu thuyết",
+    //             "Tâm lý - tâm linh - tôn giáo",
+    //             "Sách thiếu nhi"
+    //         ];
+
+    //         let data = [];
+
+    //         let bookObject = {
+    //             genre,
+    //             books
+    //         }
+
+    //         for (i = 0; i < genreOptions.length; i++) {
+    //             let books = await BookModel.find({genre: genreOptions[i], lended:false});
+    //             bookObject.genre = genreOptions[i];
+    //             bookObject.books = books;
+    //             data.push(bookObject);
+    //         }
+
+    //         errorObject.data = data;
+    //         errorObject.message = "Get books by genre successful";
+    //         errorObject.messageCode = 200;
+
+    //         res.send(errorObject);
+
+    //     } catch (err) {
+    //         errorObject.message = err.message;
+    //         errorObject.data = null;
+    //         errorObject.messageCode = 400;
+    //     }
+
+    // }
+
+    getDetailBook: async(req,res) => {
+        await BookModel.findOne({ _id: req.params.id })
+        .populate('user_id')
+        .exec((err, book) => {
+            if (err) {
+                errorObject.message = err.message;
+                errorObject.messageCode = 400;
+                errorObject.data = null;
+                return res.send(errorObject);
+            } else {
+                errorObject.message = "Get Detail Book Successful";
+                errorObject.messageCode = 200;
+                errorObject.data = book;
+                return res.send(errorObject);
+            }
+        })
     }
 
 }
