@@ -13,13 +13,13 @@ router.put('/:id', isAuth, bookController.upload, bookController.updateBook);
 router.delete('/:id', isAuth, bookController.deleteBook);
 
 // lấy sách đã cho mượn của user
-router.get('/lendedbook', isAuth, bookController.getLendedBook);
+router.get('/lendedbook/:id', isAuth, bookController.getLendedBook);
 
 // lấy sách theo filter
 router.get('/', bookController.getBook);
 
 // lấy theo user genres
-router.get('/usergenres', bookController.getBookByUserGenre);
+router.get('/usergenres/:id', bookController.getBookByUserGenre);
 
 // lấy theo genres
 router.get('/allbook', bookController.getBookByGenre);

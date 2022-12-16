@@ -115,7 +115,7 @@ const bookController = {
 
     getLendedBook: async (req, res) => {
         try {
-            await BookModel.find({ lended: true, user_id: req.body.user_id })
+            await BookModel.find({ lended: true, user_id: req.params.id })
                 .sort({ 'createdAt': -1 })
                 .exec((err, book) => {
                     if (err) {
@@ -207,7 +207,7 @@ const bookController = {
     getBookByUserGenre: async (req, res) => {
         try {
 
-            let usergenres = await UserModel.findOne({ _id: req.body.user_id });
+            let usergenres = await UserModel.findOne({ _id: req.params.id });
 
             let collection1 = await BookModel.find({ genre: usergenres.genre[0], lended: false })
                 .limit(3);
