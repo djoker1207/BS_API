@@ -47,26 +47,32 @@ const answerController = {
 
         const answer = await AnswerModel.findOne({ _id: req.params.id });
 
-        if (answer.user_id != req.body.user_id) {
+        // if (answer.user_id != req.body.user_id) {
+        //     errorObject.message = "You can not delete this answer";
+        //     errorObject.messageCode = 400;
+        //     errorObject.data = null;
+        //     return res.send(errorObject);
+        // }
+
+        if (answer.user_id.equals(req.user._id)) {
+            try {
+                await answer.remove();
+                errorObject.message = "Delete answer successful";
+                errorObject.messageCode = 200;
+                errorObject.data = null;
+                return res.send(errorObject);
+            } catch (err) {
+                errorObject.message = err.message;
+                errorObject.messageCode = 400;
+                errorObject.data = null;
+                return res.send(errorObject);
+            }
+        } else {
             errorObject.message = "You can not delete this answer";
             errorObject.messageCode = 400;
             errorObject.data = null;
             return res.send(errorObject);
         }
-
-        try {
-            await answer.remove();
-            errorObject.message = "Delete answer successful";
-            errorObject.messageCode = 200;
-            errorObject.data = null;
-            return res.send(errorObject);
-        } catch (err) {
-            errorObject.message = err.message;
-            errorObject.messageCode = 400;
-            errorObject.data = null;
-            return res.send(errorObject);
-        }
-
     }
 
 }

@@ -3,6 +3,7 @@ const UserModel = require('../models/user.model');
 const cloudinary = require('../ultils/cloudinary');
 const upload = require("../ultils/multer");
 const errorObject = require('../ultils/error');
+const e = require('express');
 const bookController = {
 
     //upload
@@ -88,22 +89,30 @@ const bookController = {
 
             let book = await BookModel.findOne({ _id: req.params.id });
 
-            if (book.user_id != req.body.user_id) {
+            // if (book.user_id.equals(req.user._id)) {
+            //     console.log(book.user_id, req.user._id);
+            //     errorObject.message = "You are not allowed to delete this book";
+            //     errorObject.data = null;
+            //     errorObject.messageCode = 400;
+            //     return res.send(errorObject);
+            // }
+
+            if (book.user_id.equals(req.user._id)) {
+
+                await cloudinary.uploader.destroy(book.cloudinary_id);
+
+                await book.remove();
+
+                errorObject.message = "Delete book successful";
+                errorObject.data = null;
+                errorObject.messageCode = 200;
+                return res.send(errorObject);
+            } else {
                 errorObject.message = "You are not allowed to delete this book";
                 errorObject.data = null;
                 errorObject.messageCode = 400;
                 return res.send(errorObject);
             }
-
-
-            await cloudinary.uploader.destroy(book.cloudinary_id);
-
-            await book.remove();
-
-            errorObject.message = "Delete book successful";
-            errorObject.data = null;
-            errorObject.messageCode = 200;
-            return res.send(errorObject);
 
         } catch (err) {
             errorObject.message = err.message;
@@ -169,13 +178,12 @@ const bookController = {
                 sortBy[sort[0]] = "asc";
             }
 
-            const books = await BookModel.find({ name: { $regex: search, $options: "i" } })
+            const books = await BookModel.find({ name: { $regex: search, $options: "i" } }).populate('user_id')
                 .where("genre")
                 .in([...genre])
                 .sort(sortBy)
                 .skip(page * limit)
                 .limit(limit);
-
             const total = await BookModel.countDocuments({
                 genre: { $in: [...genre] },
                 name: { $regex: search, $options: "i" },

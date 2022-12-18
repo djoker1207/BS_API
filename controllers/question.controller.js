@@ -62,21 +62,28 @@ const questionController = {
 
         const question = await QuestionModel.findOne({ _id: req.params.id });
 
-        if (question.user_id != req.body.user_id) {
-            errorObject.message = "You can not delete this question";
-            errorObject.messageCode = 400;
-            errorObject.data = null;
-            return res.send(errorObject);
-        }
+        // if (question.user_id != req.body.user_id) {
+        //     errorObject.message = "You can not delete this question";
+        //     errorObject.messageCode = 400;
+        //     errorObject.data = null;
+        //     return res.send(errorObject);
+        // }
 
-        try {
-            await question.remove();
-            errorObject.message = "Delete question successful";
-            errorObject.messageCode = 200;
-            errorObject.data = null;
-            return res.send(errorObject);
-        } catch (error) {
-            errorObject.message = error.message;
+        if (question.user_id.equals(req.user._id)) {
+            try {
+                await question.remove();
+                errorObject.message = "Delete question successful";
+                errorObject.messageCode = 200;
+                errorObject.data = null;
+                return res.send(errorObject);
+            } catch (error) {
+                errorObject.message = error.message;
+                errorObject.messageCode = 400;
+                errorObject.data = null;
+                return res.send(errorObject);
+            }
+        } else {
+            errorObject.message = "You can not delete this question";
             errorObject.messageCode = 400;
             errorObject.data = null;
             return res.send(errorObject);
@@ -84,7 +91,7 @@ const questionController = {
     },
 
     get_question: async (req, res) => {
-        
+
         // let answer = await AnswerModel.findOne({_id: req.params.id});
 
         await QuestionModel.findOne({ _id: req.params.id })
