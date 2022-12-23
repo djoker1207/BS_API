@@ -147,6 +147,33 @@ const bookController = {
         }
     },
 
+    getMyBook: async (req, res) => {
+        try {
+            await BookModel.find({ lended: false, user_id: req.params.id })
+                .sort({ 'createdAt': -1 })
+                .exec((err, book) => {
+                    if (err) {
+                        errorObject.message = err.message;
+                        errorObject.data = null;
+                        errorObject.messageCode = 400;
+                        return res.send(errorObject);
+                    } else {
+                        errorObject.message = "get my books successful";
+                        errorObject.data = book;
+                        errorObject.messageCode = 200;
+                        return res.send(errorObject);
+                    }
+                })
+        } catch (err) {
+            errorObject.message = err.message;
+            errorObject.data = null;
+            errorObject.messageCode = 400;
+            return res.send(errorObject);
+        }
+    }
+
+    ,
+
     getBook: async (req, res) => {
         try {
             const page = parseInt(req.query.page) - 1 || 0;

@@ -15,6 +15,9 @@ router.delete('/:id', isAuth, bookController.deleteBook);
 // lấy sách đã cho mượn của user
 router.get('/lendedbook/:id', isAuth, bookController.getLendedBook);
 
+// lấy sách chưa cho mượn của user
+router.get('/mybook/:id', isAuth, bookController.getMyBook);
+
 // lấy sách theo filter
 router.get('/', bookController.getBook);
 
