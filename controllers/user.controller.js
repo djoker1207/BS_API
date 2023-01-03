@@ -54,6 +54,7 @@ const userController = {
                 const user = await newUser.save();
                 errorObject.message = 'Create user successful';
                 errorObject.messageCode = 200;
+                errorObject.data = user;
                 return res.send(errorObject);
             } catch (err) {
                 errorObject.message = err.message;
