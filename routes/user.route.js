@@ -8,7 +8,7 @@ router.post('/register', userController.upload, userController.register);
 //đăng nhập
 router.post('/login', userController.login);
 
-//getcurrentuser 
+//getcurrentuserbytoken
 router.get('/getcurrentuser', isAuth, userController.getCurrentUser);
 
 //getuserbyID
